@@ -1,0 +1,64 @@
+name: pathoHGA
+# 使用已有的 AIFFPE conda 环境（/home/rent_user/miniconda3/envs/AIFFPE）
+# 服务器：4× GPU (20GB each), CUDA 12.4, Python 3.10
+# 激活方式：/home/rent_user/miniconda3/bin/conda activate AIFFPE
+#
+# 以下为实际安装的关键包版本（供参考/重建）：
+#   torch==2.6.0+cu124
+#   torchvision==0.21.0+cu124
+#   torch-geometric==2.7.0
+#   torch-scatter==2.1.2+pt26cu124
+#   torch-sparse==0.6.18+pt26cu124
+#   torch-cluster==1.6.3+pt26cu124
+#   dgl==2.5.0+cu124  (-f https://data.dgl.ai/wheels/torch-2.6/cu124/repo.html)
+#   torch_scatter/sparse/cluster: -f https://data.pyg.org/whl/torch-2.6.0+cu124.html
+#   histocartography==0.1.4
+#   transformers==4.40.0
+#   timm==1.0.22
+#   langgraph>=0.2.0 (installed: 1.1.6)
+#   langchain>=0.2.0 (installed: 1.2.15)
+#   langchain-google-genai (installed: 4.2.1)
+#   grakel==0.1.10
+#   faiss-gpu==1.7.2
+#   mlflow==3.11.1
+#   einops==0.8.2
+#   openslide-python==1.2.0
+#   numpy<2 (installed: 1.26.4, grakel requires numpy 1.x)
+#   h5py, scipy, pandas, scikit-learn, tqdm, pillow: already present
+
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - torch==2.6.0+cu124 --index-url https://download.pytorch.org/whl/cu124
+    - torchvision==0.21.0+cu124 --index-url https://download.pytorch.org/whl/cu124
+    - torch-geometric==2.7.0
+    - torch-scatter -f https://data.pyg.org/whl/torch-2.6.0+cu124.html
+    - torch-sparse -f https://data.pyg.org/whl/torch-2.6.0+cu124.html
+    - torch-cluster -f https://data.pyg.org/whl/torch-2.6.0+cu124.html
+    - torch-spline-conv -f https://data.pyg.org/whl/torch-2.6.0+cu124.html
+    - dgl -f https://data.dgl.ai/wheels/torch-2.6/cu124/repo.html
+    - histocartography
+    - openslide-python
+    - transformers==4.40.0
+    - timm
+    - langgraph>=0.2.0
+    - langchain>=0.2.0
+    - langchain-google-genai
+    - grakel
+    - faiss-gpu
+    - h5py
+    - pandas
+    - scikit-learn
+    - tqdm
+    - mlflow
+    - einops
+    - pillow
+    - pyyaml
+    - numpy<2
+    - scipy

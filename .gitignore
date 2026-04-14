@@ -1,0 +1,18 @@
+# Runtime artifacts
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Training artifacts
+**/logs/
+**/checkpoints/
+**/outputs/
+
+# Data & weights
+**/data/
+**/models/
+
+# IDE
+.vscode/
+.idea/
