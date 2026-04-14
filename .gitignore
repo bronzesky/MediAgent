@@ -8,10 +8,15 @@
 **/logs/
 **/checkpoints/
 **/outputs/
+**/results/
 
 # Data & weights
 **/data/
 **/models/
+
+# Keep source-code model modules tracked
+!PathoHGA/core/models/
+!PathoHGA/core/models/*.py
 
 # IDE
 .vscode/
