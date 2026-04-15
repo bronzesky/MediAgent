@@ -30,7 +30,7 @@
 ## 三、下一阶段任务（按优先级）
 
 ### P0（必须先做）
-- [ ] 将 `graph_builder` 从 smoke 特征升级到真实病理特征链路（细胞/组织真实特征）。
+- [x] 将 `graph_builder` 从 smoke 特征升级到真实病理特征链路（细胞/组织真实特征）。
 - [ ] 增加统一配置系统（`configs/bracs_baseline.yml`, `configs/bracs_pathohga.yml`）。
 - [ ] 统一 train/eval 参数入口，支持 seed、batch、设备、输出目录。
 - [ ] 固化数据与运行 manifest（数据版本、代码版本、配置版本三元绑定）。
@@ -54,7 +54,7 @@
 ---
 
 ## 四、本周可执行里程碑（建议）
-- [ ] 里程碑 M1：真实 `graph_builder` 可跑并替换 smoke 版本。
+- [x] 里程碑 M1：真实 `graph_builder` 可跑并替换 smoke 版本。
 - [ ] 里程碑 M2：Baseline 正式训练跑通并有稳定日志。
 - [ ] 里程碑 M3：C1+C2 论文版最小可训闭环完成。
 - [ ] 里程碑 M4：C3 可验证推理闭环完成并可输出证据链。
