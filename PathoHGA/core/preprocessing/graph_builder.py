@@ -6,39 +6,42 @@ import torch
 from torch_geometric.data import HeteroData
 from tqdm import tqdm
 
+# Temporarily modify hact-net path
 sys.path.insert(0, '/media/share/HDD_16T_1/AIFFPE/MediAgent/hact-net')
-from core.generate_hact_graphs import HACTBuilding, TUMOR_TYPE_TO_LABEL
+
+# Patch the target image path before importing
+import core.generate_hact_graphs as hact_module
 
 def dgl_to_pyg(cell_graph, tissue_graph, assignment_matrix, label, split, image_id):
     data = HeteroData()
     
-    cell_x = torch.from_numpy(cell_graph.ndata["feat"]).float()
-    cell_pos = torch.from_numpy(cell_graph.ndata["centroid"]).float()
-    data["cell"].x = cell_x
-    data["cell"].pos = cell_pos
+    cell_x = torch.from_numpy(cell_graph.ndata['feat']).float()
+    cell_pos = torch.from_numpy(cell_graph.ndata['centroid']).float()
+    data['cell'].x = cell_x
+    data['cell'].pos = cell_pos
     
-    tissue_x = torch.from_numpy(tissue_graph.ndata["feat"]).float()
-    tissue_pos = torch.from_numpy(tissue_graph.ndata["centroid"]).float()
-    data["tissue"].x = tissue_x
-    data["tissue"].pos = tissue_pos
+    tissue_x = torch.from_numpy(tissue_graph.ndata['feat']).float()
+    tissue_pos = torch.from_numpy(tissue_graph.ndata['centroid']).float()
+    data['tissue'].x = tissue_x
+    data['tissue'].pos = tissue_pos
     
     cell_edges = cell_graph.edges()
     cell_edge_index = torch.stack([
         torch.from_numpy(cell_edges[0]),
         torch.from_numpy(cell_edges[1])
     ], dim=0).long()
-    data["cell", "neighbors", "cell"].edge_index = cell_edge_index
+    data['cell', 'neighbors', 'cell'].edge_index = cell_edge_index
     
     tissue_edges = tissue_graph.edges()
     tissue_edge_index = torch.stack([
         torch.from_numpy(tissue_edges[0]),
         torch.from_numpy(tissue_edges[1])
     ], dim=0).long()
-    data["tissue", "adjacent", "tissue"].edge_index = tissue_edge_index
+    data['tissue', 'adjacent', 'tissue'].edge_index = tissue_edge_index
     
     assign_edges = assignment_matrix.nonzero()
     assign_edge_index = torch.from_numpy(assign_edges).long().t().contiguous()
-    data["cell", "belongs_to", "tissue"].edge_index = assign_edge_index
+    data['cell', 'belongs_to', 'tissue'].edge_index = assign_edge_index
     
     data.y = torch.tensor([label], dtype=torch.long)
     data.split = split
@@ -49,6 +52,11 @@ def dgl_to_pyg(cell_graph, tissue_graph, assignment_matrix, label, split, image_
     return data
 
 def process_dataset(manifest_path, output_dir, target_image_path, subset='smoke', device='cuda'):
+    # Patch the target image path
+    hact_module.STAIN_NORM_TARGET_IMAGE = target_image_path
+    
+    from core.generate_hact_graphs import HACTBuilding, TUMOR_TYPE_TO_LABEL
+    
     with open(manifest_path) as f:
         manifest = json.load(f)
     
