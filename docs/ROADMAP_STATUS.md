@@ -30,7 +30,7 @@
 ## 三、下一阶段任务（按优先级）
 
 ### P0（必须先做）
-- [x] 将 `graph_builder` 从 smoke 特征升级到真实病理特征链路（细胞/组织真实特征）。
+- [x] 将 `graph_builder` 从 smoke 特征升级到实体级特征链路（基于细胞/组织实体掩膜统计，非固定 patch）。
 - [ ] 增加统一配置系统（`configs/bracs_baseline.yml`, `configs/bracs_pathohga.yml`）。
 - [ ] 统一 train/eval 参数入口，支持 seed、batch、设备、输出目录。
 - [ ] 固化数据与运行 manifest（数据版本、代码版本、配置版本三元绑定）。

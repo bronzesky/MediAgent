@@ -1,9 +1,25 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
-from core.models.hypergraph import LearnableHypergraph
 from core.models.alignment import LabelTextAligner
+
+try:
+    from core.models.hypergraph import LearnableHypergraph  # legacy simple API
+except Exception:
+    from core.models.hypergraph import LearnableHyperedgeGenerator
+
+    class LearnableHypergraph(nn.Module):
+        def __init__(self, hidden_dim: int, num_hyperedges: int = 8):
+            super().__init__()
+            self.gen = LearnableHyperedgeGenerator(node_dim=hidden_dim, num_phenotypes=num_hyperedges)
+
+        def forward(self, cell_embeddings: torch.Tensor):
+            incidence, _ = self.gen(cell_embeddings)
+            hyper = incidence.t() @ cell_embeddings
+            denom = incidence.sum(dim=0).unsqueeze(1).clamp_min(1e-6)
+            hyper = hyper / denom
+            hyper_pool = hyper.mean(dim=0)
+            return hyper_pool, incidence
 
 
 class PathoHGAModel(nn.Module):
@@ -11,11 +27,13 @@ class PathoHGAModel(nn.Module):
         super().__init__()
         self.use_c1 = use_c1
         self.use_c2 = use_c2
+
         self.cell_encoder = nn.Sequential(nn.Linear(in_dim, hidden_dim), nn.ReLU(), nn.Linear(hidden_dim, hidden_dim))
         self.tissue_encoder = nn.Sequential(nn.Linear(in_dim, hidden_dim), nn.ReLU(), nn.Linear(hidden_dim, hidden_dim))
 
         self.hyper = LearnableHypergraph(hidden_dim, num_hyperedges=num_hyperedges)
         graph_dim = hidden_dim * (3 if use_c1 else 2)
+
         self.classifier = nn.Sequential(nn.Linear(graph_dim, hidden_dim), nn.ReLU(), nn.Linear(hidden_dim, num_classes))
         self.aligner = LabelTextAligner(num_classes=num_classes, emb_dim=graph_dim)
 
@@ -27,6 +45,7 @@ class PathoHGAModel(nn.Module):
 
         features = [cell_pool, tissue_pool]
         aux = {}
+
         if self.use_c1:
             hyper_pool, incidence = self.hyper(cell_h)
             features.append(hyper_pool)
@@ -41,5 +60,6 @@ class PathoHGAModel(nn.Module):
             out["loss_align"] = loss_align
         else:
             out["loss_align"] = torch.tensor(0.0, device=logits.device)
+
         out.update(aux)
         return out
